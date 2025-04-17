@@ -2,9 +2,8 @@ package com.example.blockbuster_api.controllers;
 
 import com.example.blockbuster_api.models.Movie;
 import com.example.blockbuster_api.models.MovieGenre;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +34,67 @@ public class MovieController {
         movies.put(m5.getId(), m5);
     }
 
+//    @GetMapping
+//    public Map<Long, Movie> getMovies(){
+//        return movies;
+//    }
+
     @GetMapping
-    public Map<Long, Movie> getMovies(){
-        return movies;
+    public ResponseEntity<Map<Long, Movie>> getMovies(){
+        return ResponseEntity.ok(movies);
+    }
+
+    @GetMapping("/{id}")               //curly braces to say this is a variable
+    public ResponseEntity<Movie> getMovieById(@PathVariable Long id){
+        Movie movie = movies.get(id);
+        if(movie != null){
+            return ResponseEntity.ok(movie);
+        }
+        return ResponseEntity.notFound().build();    //This line for not found(404)
+    }
+
+    @PostMapping
+    public ResponseEntity<Movie> createNewMovie(@RequestBody Movie movieDetails){
+        movieDetails.setId(idCounter.incrementAndGet());
+        movies.put(movieDetails.getId(), movieDetails);
+        return ResponseEntity.ok(movieDetails);
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Movie> updateMovieById(@PathVariable Long id, @RequestBody Movie movieDetails){
+        Movie movie = movies.get(id);
+        if(movie == null){
+            return ResponseEntity.notFound().build();
+        }
+        movieDetails.setId(id);
+        movies.put(id, movieDetails);
+        return ResponseEntity.ok(movieDetails);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteMovieById(@PathVariable Long id){
+        movies.remove(id);
+    }
+
+    @GetMapping("/rent/{id}")
+    public ResponseEntity<Movie> rentMovieById(@PathVariable Long id){
+        Movie movie = movies.get(id);
+        if(movie != null && movie.isAvailable()){
+            movie.setAvailable(false);
+            return ResponseEntity.ok(movie);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/return/{id}")
+    public ResponseEntity<Movie> returnMovieById(@PathVariable Long id){
+        Movie movie = movies.get(id);
+        if(movie != null && !movie.isAvailable()){
+            movie.setAvailable(true);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
 }

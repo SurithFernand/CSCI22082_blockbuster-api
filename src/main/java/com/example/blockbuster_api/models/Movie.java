@@ -1,10 +1,16 @@
 package com.example.blockbuster_api.models;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Movie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
     private int releaseYear;
     private boolean available;
+    @Enumerated(EnumType.STRING)
     private MovieGenre genre;
 
     public Movie(String title, int releaseYear, boolean available, MovieGenre genre) {
