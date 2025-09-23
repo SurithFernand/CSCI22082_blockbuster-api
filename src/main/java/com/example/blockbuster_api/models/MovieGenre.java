@@ -4,5 +4,6 @@ public enum MovieGenre {
     ACTION,
     WAR,
     THRILLER,
-    DRAMA
+    DRAMA,
+    ROMANCE
 }
