@@ -1,5 +1,6 @@
 package com.example.blockbuster_api.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -38,6 +39,10 @@ public class Movie{
     private MovieGenre genre; // Enum to represent the genre of the movie
     private boolean isRented;
 
+    @OneToMany(mappedBy = "movie" , cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Rating> ratings;
+
 
     public Movie(String title, int releaseYear, MovieGenre genre) {
         this.title = title;
@@ -47,4 +52,3 @@ public class Movie{
     }
 
 }
-

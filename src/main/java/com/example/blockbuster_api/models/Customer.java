@@ -1,11 +1,14 @@
 package com.example.blockbuster_api.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,6 +42,10 @@ public class Customer {
     @JoinColumn(name = "address_id")
     @JsonManagedReference
     private Address address;
+
+    @OneToMany(mappedBy = "customer" , cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Rating> ratings;
 
     public Customer(String firstName, String lastName, String email) {
         this.firstName = firstName;

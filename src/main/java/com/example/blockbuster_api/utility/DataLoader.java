@@ -1,11 +1,9 @@
 package com.example.blockbuster_api.utility;
 
-import com.example.blockbuster_api.models.Address;
-import com.example.blockbuster_api.models.Customer;
-import com.example.blockbuster_api.models.Movie;
-import com.example.blockbuster_api.models.MovieGenre;
+import com.example.blockbuster_api.models.*;
 import com.example.blockbuster_api.service.CustomerService;
 import com.example.blockbuster_api.service.MovieService;
+import com.example.blockbuster_api.service.RatingService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +15,12 @@ import java.util.List;
 public class DataLoader{
     private final MovieService movieService; // Service for performing CRUD operations on movies
     private final CustomerService customerService;
+    private final RatingService ratingService;
 
-    public DataLoader(MovieService movieService, CustomerService customerService) {
+    public DataLoader(MovieService movieService, CustomerService customerService, RatingService ratingService) {
         this.movieService = movieService; // Assigning the injected service to the class variable
         this.customerService = customerService;
+        this.ratingService = ratingService;
     }
 
     @PostConstruct
@@ -72,6 +72,38 @@ public class DataLoader{
             customers.add(bob);
 
             customerService.saveAllCustomers(customers);
+        }
+
+        // Add sample ratings if none exist
+        if (ratingService.getAllRatings().isEmpty()) {
+            List<Customer> customers = customerService.getAllCustomers();
+            List<Movie> movies = movieService.getAllMovies();
+            if (!customers.isEmpty() && !movies.isEmpty()) {
+                Customer john = customers.stream().filter(c -> c.getEmail().equals("john.doe@example.com")).findFirst().orElse(null);
+                Customer jane = customers.stream().filter(c -> c.getEmail().equals("jane.smith@example.com")).findFirst().orElse(null);
+                Customer alice = customers.stream().filter(c -> c.getEmail().equals("alice.johnson@example.com")).findFirst().orElse(null);
+                Customer bob = customers.stream().filter(c -> c.getEmail().equals("bob.brown@example.com")).findFirst().orElse(null);
+
+                Movie shawshank = movies.stream().filter(m -> m.getTitle().equals("The Shawshank Redemption")).findFirst().orElse(null);
+                Movie inception = movies.stream().filter(m -> m.getTitle().equals("Inception")).findFirst().orElse(null);
+                Movie matrix = movies.stream().filter(m -> m.getTitle().equals("The Matrix")).findFirst().orElse(null);
+                Movie godfather = movies.stream().filter(m -> m.getTitle().equals("The Godfather")).findFirst().orElse(null);
+
+                if (john != null && shawshank != null) {
+                    ratingService.addRating(new Rating( 9, shawshank, john));
+                    ratingService.addRating(new Rating( 9, matrix, john));
+                }
+                if (jane != null && inception != null) {
+                    ratingService.addRating(new Rating( 8, inception, jane));
+                }
+                if (alice != null && matrix != null) {
+                    ratingService.addRating(new Rating( 7, matrix, alice));
+                }
+                if (bob != null && godfather != null) {
+                    ratingService.addRating(new Rating(10, godfather, bob));
+                }
+                // Add more sample ratings as needed
+            }
         }
     }
 }
