@@ -35,6 +35,11 @@ public class Customer {
     @NotNull
     private LocalDate registrationDate;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    @JsonManagedReference
+    private Address address;
+
     public Customer(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -50,4 +55,3 @@ public class Customer {
         return firstName + " " + lastName; // Concatenating first and last name to get the full name
     }
 }
-
